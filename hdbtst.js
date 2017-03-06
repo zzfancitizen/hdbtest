@@ -25,7 +25,7 @@ function hdbconnect(obj) {
 
 function hdbexecute(obj) {
     return new Promise(function (resolve, reject) {
-        obj.client.exec(hdbconfig.hdbsql, function (err, rows) {
+        obj.client.exec(hdbconfig.hdbsql.select, function (err, rows) {
             if (err) {
                 reject(err);
             } else {
@@ -86,12 +86,9 @@ function printResult(obj) {
 
 function insertHdb(obj) {
     return new Promise(function (resolve, reject) {
-        obj.client.prepare('call "PDMS_TECH_USER"."PROC_DUMMY" (?, ?, ?, ?)', function (err, statement) {
+        obj.client.prepare(hdbconfig.hdbsql.procedure, function (err, statement) {
             if (err) reject(err);
-            statement.exec({
-                VAL1: 1,
-                VAL2: 2
-            }, function (err, parameters, dummyRows) {
+            statement.exec(hdbconfig.hdbsql.inputPara, function (err, parameters, dummyRows) {
                 if (err) reject(err);
                 console.log('Parameters:', parameters);
                 console.log('Dummies:', dummyRows);

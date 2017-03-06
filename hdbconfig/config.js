@@ -5,4 +5,12 @@ module.exports.hdbconfig = {
     password: 'Toor1234'
 };
 
-module.exports.hdbsql = 'select TPLNR from "equi"."IFLOT"';
+module.exports.hdbsql = {
+    select: 'select TPLNR from "equi"."IFLOT"',
+    procedure: 'call "PDMS_TECH_USER"."PROC_DUMMY" (?, ?, ?, ?)',
+    inputPara: {
+        VAL1: 1,
+        VAL2: 2
+    }
+};
+
