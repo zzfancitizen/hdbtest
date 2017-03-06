@@ -5,7 +5,9 @@ var client = hdb.createClient(hdbconfig.hdbconfig);
 var hdbObj = {
     client: client,
     value: ''
-}
+};
+
+var httpRes ={};
 
 client.on('error', function (err) {
     console.error('Network connection error', err);
@@ -40,6 +42,7 @@ function hdbexecute(obj) {
 function hdbexcept(err) {
     return new Promise(function (resolve, reject) {
         console.error(err);
+        return httpRes.error;
     })
 };
 
@@ -95,15 +98,23 @@ function insertHdb(obj) {
             })
         });
         obj.client.end();
+        resolve(obj);
     })
 }
 
-Promise.resolve(hdbObj)
-    .then(hdbconnect)
-    .then(hdbexecute)
-    .catch(hdbexcept)
-    .then(hdbDataHandler)
-    .catch(hdbexcept)
-    .then(printResult)
-    .then(insertHdb)
-    .catch(hdbexcept);
+function raise(obj) {
+    return httpRes.value;
+}
+
+module.exports.windmillWrap = function () {
+    return Promise.resolve(hdbObj)
+            .then(hdbconnect)
+            .then(hdbexecute)
+            .catch(hdbexcept)
+            .then(hdbDataHandler)
+            .catch(hdbexcept)
+            .then(printResult)
+            .then(insertHdb)
+            .catch(hdbexcept)
+            .then(raise);
+};
