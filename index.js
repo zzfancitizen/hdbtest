@@ -5,6 +5,7 @@ const cron = require('cron');
 var server = http.createServer().listen(8080);
 var CronJob = cron.CronJob;
 var scheduleWrap = {};
+var isRunning = false;
 
 function startJob() {
     console.log('You will see this message every second');
@@ -34,17 +35,28 @@ server.on('request', function (req, res) {
                 var rule = '%1 %2 %3 * * */1'.replace(/%1/g, time[2])
                     .replace(/%2/g, time[1])
                     .replace(/%3/g, time[0]);
-                scheduleWrap = new CronJob(rule, startJob, null, false, null);
-                scheduleWrap.start();
-                res.writeHead(200, {'Content-Type': 'test/plain'});
-                res.write('Job scheduled');
-                res.end();
+                if (!isRunning) {
+                    scheduleWrap = new CronJob(rule, startJob, null, false, null);
+                    scheduleWrap.start();
+                    isRunning = true;
+                    res.writeHead(200, {'Content-Type': 'test/plain'});
+                    res.write('Job scheduled');
+                    res.end();
+                } else {
+                    res.writeHead(200, {'Content-Type': 'test/plain'});
+                    res.write('Job already scheduled');
+                    res.end();
+                }
+                ;
+
             })
         }
         ;
         if (req.method == 'DELETE') {
             try {
                 scheduleWrap.stop();
+                isRunning = false;
+                scheduleWrap = {};
                 res.writeHead(200, {'Content-Type': 'test/plain'});
                 res.write('Job cancelled');
                 res.end();
