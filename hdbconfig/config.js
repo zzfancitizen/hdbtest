@@ -6,11 +6,7 @@ module.exports.hdbconfig = {
 };
 
 module.exports.hdbsql = {
-    select: 'select TPLNR from "equi"."IFLOT"',
-    procedure: 'call "PDMS_TECH_USER"."PROC_DUMMY" (?, ?, ?, ?)',
-    inputPara: {
-        VAL1: 1,
-        VAL2: 2
-    }
+    select: 'select tplnr from "equi"."IFLOT" where erdat = ?',
+    procedure: 'call "PDMS_TECH_USER"."PROC_DUMMY"(?, ?)'
 };
 

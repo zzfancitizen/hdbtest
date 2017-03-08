@@ -93,8 +93,8 @@ function insertHdb(obj) {
             if (err) reject(err);
             statement.exec(hdbconfig.hdbsql.inputPara, function (err, parameters, dummyRows) {
                 if (err) reject(err);
-                console.log('Parameters:', parameters);
-                console.log('Dummies:', dummyRows);
+                // console.log('Parameters:', parameters);
+                // console.log('Dummies:', dummyRows);
             })
         });
         obj.client.end();
@@ -103,8 +103,19 @@ function insertHdb(obj) {
 }
 
 function raise(obj) {
+    console.log(obj);
     return httpRes.value;
 }
+
+Promise.resolve(hdbObj)
+    .then(hdbconnect)
+    .then(hdbexecute)
+    .catch(hdbexcept)
+    .then(hdbDataHandler)
+    .catch(hdbexcept)
+    .then(insertHdb)
+    .catch(hdbexcept)
+    .then(raise);
 
 module.exports.windmillWrap = function () {
     return Promise.resolve(hdbObj)
