@@ -38,6 +38,7 @@ server.on('request', function (req, res) {
         res.write('Job cancelled');
         res.end();
     }
+    ;
 });
 
 
