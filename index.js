@@ -1,6 +1,5 @@
 const wrap = require('./windMillWrapPoc').wrapWindMill;
 const http = require('http');
-const schedule = require('node-schedule');
 const cron = require('cron');
 
 var server = http.createServer().listen(8080);
