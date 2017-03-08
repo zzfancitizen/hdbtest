@@ -11,45 +11,54 @@ function startJob() {
 };
 
 server.on('request', function (req, res) {
-    if (req.method == 'GET') {
-        wrap.then(function (val) {
-                res.writeHead(200, {'Content-Type': 'application/json'});
-                res.write(JSON.stringify(val));
-                res.end();
-            }
-        )
-            .catch(
-                function (err) {
-                    res.writeHead(500, {'Content-Type': 'text/plain'});
-                    res.write(err);
+    if (req.url == '/jobschedule') {
+        if (req.method == 'GET') {
+            wrap.then(function (val) {
+                    res.writeHead(200, {'Content-Type': 'application/json'});
+                    res.write(JSON.stringify(val));
                     res.end();
                 }
             )
-    }
-    ;
-    if (req.method == 'PUT') {
-        req.on('data', function (chunk) {
-            var pars = JSON.parse(chunk.toString());
-            var rule = '*/%d * * * * *'.replace(/%d/g, pars.value);
-            scheduleWrap = new CronJob(rule, startJob, null, false, null);
-            scheduleWrap.start();
-            res.writeHead(200, {'Content-Type': 'test/plain'});
-            res.write('Job scheduled');
-            res.end();
-        })
-    }
-    ;
-    if (req.method == 'DELETE') {
-        try {
-            scheduleWrap.stop();
-            res.writeHead(200, {'Content-Type': 'test/plain'});
-            res.write('Job cancelled');
-            res.end();
-        } catch (err) {
-            res.writeHead(500, {'Content-Type': 'test/plain'});
-            res.write('Please schedule one job first.');
-            res.end();
+                .catch(
+                    function (err) {
+                        res.writeHead(500, {'Content-Type': 'text/plain'});
+                        res.write(err);
+                        res.end();
+                    }
+                )
         }
+        ;
+        if (req.method == 'PUT') {
+            req.on('data', function (chunk) {
+                var time = JSON.parse(chunk.toString()).time.split(':');
+                var rule = '%1 %2 %3 * * */1'.replace(/%1/g, time[2])
+                    .replace(/%2/g, time[1])
+                    .replace(/%3/g, time[0]);
+                scheduleWrap = new CronJob(rule, startJob, null, false, null);
+                scheduleWrap.start();
+                res.writeHead(200, {'Content-Type': 'test/plain'});
+                res.write('Job scheduled');
+                res.end();
+            })
+        }
+        ;
+        if (req.method == 'DELETE') {
+            try {
+                scheduleWrap.stop();
+                res.writeHead(200, {'Content-Type': 'test/plain'});
+                res.write('Job cancelled');
+                res.end();
+            } catch (err) {
+                res.writeHead(500, {'Content-Type': 'test/plain'});
+                res.write('Please schedule one job first.');
+                res.end();
+            }
+        }
+        ;
+    } else {
+        res.writeHead(404, {'Content-Type': 'text/plain'});
+        res.write('Not found');
+        res.end();
     }
     ;
 });

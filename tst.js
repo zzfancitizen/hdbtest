@@ -1,29 +1,14 @@
-// Date.prototype.format = function (format) {
-//     var output = '';
-//     if (format == 'YYYY-MM-DD') {
-//         output = this.getFullYear();
-//         if (String(this.getMonth() + 1).length == 1) {
-//             output += '-0' + String(this.getMonth() + 1);
-//         } else {
-//             output += '-' + String(this.getMonth() + 1);
-//         }
-//         if (String(this.getDate()).length == 1) {
-//             output += '-0' + this.getDate();
-//         }  else {
-//             output += '-' + this.getDate();
-//         }
-//         return output;
-//     }
-// };
-//
-// var date = new Date('2013-03-05').format('YYYY-MM-DD');
-//
-// var obj = {
-//     TPLNR: 'S-04388-001-EK'
-// };
-//
-// Object.prototype.values = function (obj) {
-//
-// }
-var a = {1:23};
-console.log(Object.getOwnPropertyNames(a).length)
+var http = require('http');
+var vsprintf = require('sprintf-js').vsprintf;
+
+var server = http.createServer().listen(5050);
+
+server.on('request', function (req, res) {
+    if (req.method == 'PUT') {
+        req.on('data', function (chunk) {
+            var time = JSON.parse(chunk.toString()).time.split(':');
+            var rule = time[2] + ' ' + time[1] + ' ' + time[0];
+            console.log(rule);
+        })
+    }
+})
