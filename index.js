@@ -7,6 +7,10 @@ var CronJob = cron.CronJob;
 
 var server = http.createServer().listen(8080);
 
+var scheduleWrap = new CronJob('* * * * * *', function () {
+    console.log('You will see this message every second');
+}, null, false, 'America/Los_Angeles');
+
 server.on('request', function (req, res) {
     if (req.method == 'GET') {
         wrap.then(function (val) {
@@ -24,16 +28,15 @@ server.on('request', function (req, res) {
             )
     }
     ;
-    if (req.method == 'POST') {
-        new CronJob('* * * * * *', function () {
-            console.log('You will see this message every second');
-        }, null, true, 'America/Los_Angeles');
+    if (req.method == 'PUT') {
+        scheduleWrap.start();
         res.writeHead(200, {'Content-Type': 'test/plain'});
         res.write('Job scheduled');
         res.end();
     }
     ;
     if (req.method == 'DELETE') {
+        scheduleWrap.stop();
         res.writeHead(200, {'Content-Type': 'test/plain'});
         res.write('Job cancelled');
         res.end();
