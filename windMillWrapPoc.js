@@ -52,9 +52,10 @@ function hdbSelect(obj) {
         obj.client.prepare(hdbconfig.hdbsql.select, function (err, statement) {
             if (err) {
                 console.error(err);
+                obj.client.end();
                 reject(err);
             } else {
-                statement.exec([new Date('2013-03-05').format('YYYY-MM-DD')], function (err, rows) {
+                statement.exec([new Date(Date.now()).format('YYYY-MM-DD')], function (err, rows) {
                     if (err) {
                         obj.client.end();
                         reject(err);
@@ -79,11 +80,12 @@ function handleRows(obj) {
                 }
             }
         }
-        if (arr) {
+        if (arr.length == 0) {
+            obj.client.end();
+            reject('No value found');
+        } else {
             obj.value = arr;
             resolve(obj);
-        } else {
-            reject('No value found');
         }
     })
 };
@@ -125,7 +127,13 @@ function returnVal(obj) {
             count += 1;
             res['row' + count] = val;
         });
-        resolve(res);
+        if (Object.getOwnPropertyNames(res).length > 0) {
+            resolve(res);
+        }
+        else {
+            reject('No result');
+        }
+
     })
 }
 
@@ -136,9 +144,7 @@ function excHandler(err) {
 module.exports.wrapWindMill = hdbconnect(hdbObj)
     .then(hdbSelect)
     .then(handleRows)
-    .catch(excHandler)
     .then(callProcedure)
-    .catch(excHandler)
     .then(returnVal);
 
 

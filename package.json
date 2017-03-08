@@ -13,6 +13,8 @@
   "author": "Andy",
   "license": "ISC",
   "dependencies": {
-    "hdb": "^0.12.0"
+    "cron": "^1.2.1",
+    "hdb": "^0.12.0",
+    "node-schedule": "^1.2.0"
   }
 }
