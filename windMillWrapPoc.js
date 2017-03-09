@@ -137,10 +137,6 @@ function returnVal(obj) {
     })
 }
 
-function excHandler(err) {
-    console.error(err);
-};
-
 module.exports.wrapWindMill = hdbconnect(hdbObj)
     .then(hdbSelect)
     .then(handleRows)
