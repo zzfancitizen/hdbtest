@@ -55,7 +55,7 @@ function hdbSelect(obj) {
                 obj.client.end();
                 reject(err);
             } else {
-                statement.exec([new Date(Date.now()).format('YYYY-MM-DD')], function (err, rows) {
+                statement.exec([new Date('2013-03-05').format('YYYY-MM-DD')], function (err, rows) {
                     if (err) {
                         obj.client.end();
                         reject(err);
