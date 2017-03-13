@@ -2,7 +2,7 @@ const wrap = require('./windMillWrapPoc').wrapWindMill;
 const http = require('http');
 const cron = require('cron');
 
-var server = http.createServer().listen(8080);
+var server = http.createServer().listen(process.env.PORT || 8080);
 var CronJob = cron.CronJob;
 var scheduleWrap = {};
 var isRunning = false;
