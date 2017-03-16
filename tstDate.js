@@ -32,5 +32,3 @@ Date.prototype.format = function (format) {
         return output;
     }
 };
-
-console.log(new Date().format('YYYY-MM-DD HH24:MI:SS'));
