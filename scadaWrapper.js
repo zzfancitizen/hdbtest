@@ -45,6 +45,7 @@ Date.prototype.format = function (format) {
         } else {
             output += ':' + this.getSeconds();
         };
+
         return output;
     }
 };
