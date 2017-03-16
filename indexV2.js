@@ -99,7 +99,7 @@ server.on('request', function (req, res) {
                 hdbObj.parameters.time = JSON.parse(chunk.toString()).time;
                 hdbObj.parameters.freq = JSON.parse(chunk.toString()).freq;
                 var time = JSON.parse(chunk.toString()).time.split(':');
-                var rule = '%1/%4 %2 %3 * * *'.replace(/%1/g, time[2])
+                var rule = '*/%4 %2 %3 * * *'.replace(/%1/g, time[2])
                                               .replace(/%2/g, time[1])
                                               .replace(/%3/g, time[0])
                                               .replace(/%4/g, hdbObj.parameters.freq.toString());
