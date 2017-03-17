@@ -9,6 +9,11 @@ var isRunning = false;
 
 server.on('request', function (req, res) {
     if (req.url == '/scada') {
+        if (req.method == 'GET') {
+            res.writeHead(200, {'Content-Type': 'text/plain'});
+            res.write('Connected success !');
+            res.end();
+        }
         if (req.method == 'PUT') {
             req.on('data', function (chunk) {
                 var time = JSON.parse(chunk.toString()).time.split(':');
