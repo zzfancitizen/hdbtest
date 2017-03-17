@@ -18,14 +18,14 @@ server.on('request', function (req, res) {
         if (req.method == 'PUT') {
             req.on('data', function (chunk) {
                 var time = JSON.parse(chunk.toString()).time.split(':');
-                var rule = '*/%4 %2 %3 * * *'.replace(/%1/g, time[2])
-                    .replace(/%2/g, time[1])
-                    .replace(/%3/g, time[0])
-                    .replace(/%4/g, JSON.parse(chunk.toString()).freq);
+                // var rule = '*/%4 %2 %3 * * *'.replace(/%1/g, time[2])
+                //     .replace(/%2/g, time[1])
+                //     .replace(/%3/g, time[0])
+                //     .replace(/%4/g, JSON.parse(chunk.toString()).freq);
                 time = [];
                 if (!isRunning) {
                     hdb.hdbconnect();
-                    scheduleWrap = new CronJob(rule, function () {
+                    scheduleWrap = new CronJob('* * * * * *', function () {
                         hdb.setParams(JSON.parse(chunk.toString()).time, JSON.parse(chunk.toString()).freq);
                         hdb.hdbTrans();
                         console.log('Job run');
