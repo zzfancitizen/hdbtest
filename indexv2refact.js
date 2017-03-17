@@ -11,7 +11,7 @@ server.on('request', function (req, res) {
     if (req.url == '/scada') {
         if (req.method == 'GET') {
             res.writeHead(200, {'Content-Type': 'text/plain'});
-            res.write('Connected success !');
+            res.write(__dirname);
             res.end();
         }
         if (req.method == 'PUT') {

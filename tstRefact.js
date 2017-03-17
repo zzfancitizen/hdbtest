@@ -97,4 +97,3 @@ function hdbClient() {
 
 module.exports.myHDB = new hdbClient();
 
-
