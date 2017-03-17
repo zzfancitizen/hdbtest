@@ -1,6 +1,7 @@
 const http = require('http');
 const cron = require('cron');
 const hdb = require('./tstRefact').myHDB;
+const async = require('async');
 
 var server = http.createServer().listen(process.env.PORT || 8080);
 var CronJob = cron.CronJob;
@@ -23,17 +24,11 @@ server.on('request', function (req, res) {
                     .replace(/%4/g, JSON.parse(chunk.toString()).freq);
                 time = [];
                 if (!isRunning) {
+                    hdb.hdbconnect();
                     scheduleWrap = new CronJob(rule, function () {
-                        try {
-                            hdb.setParams(JSON.parse(chunk.toString()).time, JSON.parse(chunk.toString()).freq);
-                            hdb.hdbconnect();
-                            hdb.hdbTrans();
-                            console.log('Job run');
-                        } catch (e) {
-                            res.writeHead(500, {'Content-Type': 'text/plain'});
-                            res.write(e);
-                            res.end();
-                        }
+                        hdb.setParams(JSON.parse(chunk.toString()).time, JSON.parse(chunk.toString()).freq);
+                        hdb.hdbTrans();
+                        console.log('Job run');
                     }, null, false, null);
                     scheduleWrap.start();
                     isRunning = true;
@@ -50,6 +45,7 @@ server.on('request', function (req, res) {
         ;
         if (req.method == 'DELETE') {
             try {
+                hdb.hdbClose();
                 scheduleWrap.stop();
                 isRunning = false;
                 scheduleWrap = {};
@@ -67,5 +63,6 @@ server.on('request', function (req, res) {
         res.writeHead(404, {'Content-Type': 'text/plain'});
         res.write('Not found');
         res.end();
-    };
+    }
+    ;
 });

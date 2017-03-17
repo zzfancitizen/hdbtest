@@ -82,12 +82,15 @@ function hdbClient() {
                             that.hdbObj.client.end();
                             throw new _UserException("HDB statement run error !");
                         }
-                        that.hdbObj.client.end();
                     }
                 )
             }
         });
     };
+
+    this.hdbClose = function () {
+        that.hdbObj.client.end();
+    }
 
     function _UserException(message) {
         this.message = message;

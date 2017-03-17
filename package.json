@@ -14,6 +14,7 @@
   "author": "Andy",
   "license": "ISC",
   "dependencies": {
+    "async": "^2.1.5",
     "cron": "^1.2.1",
     "hdb": "^0.12.0",
     "node-schedule": "^1.2.0",
