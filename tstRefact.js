@@ -61,7 +61,11 @@ function hdbClient() {
     this.hdbconnect = function () {
         that.hdbObj.client.connect(function (err) {
             if (err) {
-                throw new _UserException("HDB connection error !");
+                var logErr = new Date().toString() + ' ' + err;
+                fs.appendFile(hdbconfig.log, logErr, function (err) {
+                    if (err) console.error(err);
+                })
+                // throw new _UserException("HDB connection error !");
             }
         });
     };
