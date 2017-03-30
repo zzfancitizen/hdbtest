@@ -1,5 +1,6 @@
 const hdb = require('hdb');
 const hdbconfig = require('./hdbconfig/config');
+const fs = require('fs');
 
 Date.prototype.format = function (format) {
     var output = '';
