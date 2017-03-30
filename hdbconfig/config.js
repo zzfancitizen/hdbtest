@@ -12,3 +12,4 @@ module.exports.hdbsql = {
     dummyWraper: 'call "I072179"."WRAPPER_DUMMY"(?, ?, ?)'
 };
 
+module.exports.log = './log/ScadaError.log';

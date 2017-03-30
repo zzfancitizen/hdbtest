@@ -70,7 +70,11 @@ function hdbClient() {
         that.hdbObj.client.prepare(hdbconfig.hdbsql.dummyWraper, function (err, statement) {
             if (err) {
                 that.hdbObj.client.end();
-                throw new _UserException("HDB statement prepared error !");
+                var logErr = new Date().toString() + ' ' + err;
+                fs.appendFile(hdbconfig.log, logErr, function (err) {
+                    if (err) console.error(err);
+                })
+                // throw new _UserException("HDB statement prepared error !");
             } else {
                 statement.exec(
                     {
@@ -81,7 +85,12 @@ function hdbClient() {
                     function (err) {
                         if (err) {
                             that.hdbObj.client.end();
-                            throw new _UserException("HDB statement run error !");
+                            var logErr = new Date().toString() + ' ' + err;
+                            fs.appendFile(hdbconfig.log, logErr, function (err) {
+                                if (err) console.error(err);
+                            })
+                            // throw new _UserException("HDB statement prepared error !");
+                            // throw new _UserException("HDB statement run error !");
                         }
                     }
                 )
