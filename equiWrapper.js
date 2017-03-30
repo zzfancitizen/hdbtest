@@ -37,6 +37,21 @@ Date.prototype.format = function (format) {
         }
         ;
         return output;
+    } else if (format == 'YYYY-MM-DD') {
+        output = this.getFullYear();
+        if (String(this.getMonth() + 1).length == 1) {
+            output += '-0' + String(this.getMonth() + 1);
+        } else {
+            output += '-' + String(this.getMonth() + 1);
+        }
+        ;
+        if (String(this.getDate()).length == 1) {
+            output += '-0' + this.getDate();
+        } else {
+            output += '-' + this.getDate();
+        }
+        ;
+        return output;
     }
 };
 
@@ -62,7 +77,7 @@ function hdbClient() {
         that.hdbObj.client.connect(function (err) {
             if (err) {
                 var logErr = new Date().toString() + ' ' + err;
-                fs.appendFile(hdbconfig.log, logErr, function (err) {
+                fs.appendFile(hdbconfig.log.equi, logErr, function (err) {
                     if (err) console.error(err);
                 })
                 // throw new _UserException("HDB connection error !");
@@ -71,26 +86,24 @@ function hdbClient() {
     };
 
     this.hdbTrans = function () {
-        that.hdbObj.client.prepare(hdbconfig.hdbsql.dummyWraper, function (err, statement) {
+        that.hdbObj.client.prepare(hdbconfig.hdbsql.equiWraper, function (err, statement) {
             if (err) {
                 that.hdbObj.client.end();
                 var logErr = new Date().toString() + ' ' + err;
-                fs.appendFile(hdbconfig.log, logErr, function (err) {
+                fs.appendFile(hdbconfig.log.equi, logErr, function (err) {
                     if (err) console.error(err);
                 })
                 // throw new _UserException("HDB statement prepared error !");
             } else {
                 statement.exec(
                     {
-                        TIMESTAMP: new Date().format('YYYY-MM-DD HH24:MI:SS'),
-                        DESC: 'Andy Testing!',
-                        FREQ: that.hdbObj.parameters.freq
+                        DATE: new Date().format('YYYY-MM-DD')
                     },
                     function (err) {
                         if (err) {
                             that.hdbObj.client.end();
                             var logErr = new Date().toString() + ' ' + err;
-                            fs.appendFile(hdbconfig.log, logErr, function (err) {
+                            fs.appendFile(hdbconfig.log.equi, logErr, function (err) {
                                 if (err) console.error(err);
                             })
                             // throw new _UserException("HDB statement prepared error !");

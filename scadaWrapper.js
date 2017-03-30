@@ -1,20 +1,6 @@
 const hdb = require('hdb');
 const hdbconfig = require('./hdbconfig/config');
-
-var client = hdb.createClient(hdbconfig.hdbconfig);
-
-var hdbObj = {
-    client: client,
-    parameters: {
-        timestamp: '',
-        freq: 0
-    },
-    error: ''
-};
-
-client.on('error', function (err) {
-    hdbObj.error = err;
-});
+const fs = require('fs');
 
 Date.prototype.format = function (format) {
     var output = '';
@@ -24,74 +10,105 @@ Date.prototype.format = function (format) {
             output += '-0' + String(this.getMonth() + 1);
         } else {
             output += '-' + String(this.getMonth() + 1);
-        };
+        }
+        ;
         if (String(this.getDate()).length == 1) {
             output += '-0' + this.getDate();
         } else {
             output += '-' + this.getDate();
-        };
+        }
+        ;
         if (String(this.getHours()).length == 1) {
             output += ' 0' + this.getHours();
         } else {
             output += ' ' + this.getHours();
-        };
+        }
+        ;
         if (String(this.getMinutes()).length == 1) {
             output += ':0' + this.getMinutes();
         } else {
             output += ':' + this.getMinutes();
-        };
+        }
+        ;
         if (String(this.getSeconds()).length == 1) {
             output += ':0' + this.getSeconds();
         } else {
             output += ':' + this.getSeconds();
-        };
-
+        }
+        ;
         return output;
     }
 };
 
-function hdbconnect(obj) {
-    return new Promise(function (resolve, reject) {
-        obj.client.connect(function (err) {
-            if (err) {
-                obj.client.end();
-                reject(err);
-            } else {
-                resolve(obj);
-            }
-        })
-    })
-};
+function hdbClient() {
 
-function hdbTrans(obj) {
-    return new Promise(function (resolve, reject) {
-        obj.client.prepare(hdbconfig.hdbsql.dummyWraper, function (err, statement) {
+    this.hdbObj = {
+        client: hdb.createClient(hdbconfig.hdbconfig),
+        parameters: {
+            time: '',
+            freq: 0
+        },
+        error: ''
+    };
+
+    var that = this;
+
+    this.setParams = function (time, freq) {
+        that.hdbObj.parameters.time = time;
+        that.hdbObj.parameters.freq = freq;
+    }
+
+    this.hdbconnect = function () {
+        that.hdbObj.client.connect(function (err) {
             if (err) {
-                obj.client.end();
-                reject(err);
-            } else {
-                statement.exec({
-                    TIMESTAMP: new Date().format('YYYY-MM-DD HH24:MI:SS'),
-                    DESC: 'Andy Testing!',
-                    FREQ: 0
-                }, function (err, parameters, result) {
-                    if (err) {
-                        obj.client.end();
-                        reject(err);
-                    } else {
-                        obj.parameters = parameters;
-                        obj.results = result;
-                        obj.client.end();
-                        resolve(obj);
-                    }
+                var logErr = new Date().toString() + ' ' + err;
+                fs.appendFile(hdbconfig.log.scada, logErr, function (err) {
+                    if (err) console.error(err);
                 })
+                // throw new _UserException("HDB connection error !");
             }
-        })
-    })
+        });
+    };
+
+    this.hdbTrans = function () {
+        that.hdbObj.client.prepare(hdbconfig.hdbsql.scadaWraper, function (err, statement) {
+            if (err) {
+                that.hdbObj.client.end();
+                var logErr = new Date().toString() + ' ' + err;
+                fs.appendFile(hdbconfig.log.scada, logErr, function (err) {
+                    if (err) console.error(err);
+                })
+                // throw new _UserException("HDB statement prepared error !");
+            } else {
+                statement.exec(
+                    {
+                        TIMESTAMP: new Date().format('YYYY-MM-DD HH24:MI:SS'),
+                        FREQ: that.hdbObj.parameters.freq
+                    },
+                    function (err) {
+                        if (err) {
+                            that.hdbObj.client.end();
+                            var logErr = new Date().toString() + ' ' + err;
+                            fs.appendFile(hdbconfig.log.scada, logErr, function (err) {
+                                if (err) console.error(err);
+                            })
+                            // throw new _UserException("HDB statement prepared error !");
+                            // throw new _UserException("HDB statement run error !");
+                        }
+                    }
+                )
+            }
+        });
+    };
+
+    this.hdbClose = function () {
+        that.hdbObj.client.end();
+    }
+
+    function _UserException(message) {
+        this.message = message;
+        this.name = 'UserException';
+    }
 };
 
-function catchError(err) {
-    console.log(err);
-}
-
-hdbconnect(hdbObj).then(hdbTrans).catch(catchError);
+module.exports.myHDB = new hdbClient();

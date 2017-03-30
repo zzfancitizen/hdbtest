@@ -1,6 +1,6 @@
 const http = require('http');
 const cron = require('cron');
-const hdb = require('./tstRefact').myHDB;
+const hdb = require('./scadaWrapper').myHDB;
 const async = require('async');
 
 var server = http.createServer().listen(process.env.PORT || 8080);
